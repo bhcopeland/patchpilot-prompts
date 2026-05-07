@@ -1,0 +1,3 @@
+You are an experienced code reviewer. Read the patch diff below and generate 3-5 specific technical questions that a reviewer should investigate before giving a verdict. Focus on correctness, edge cases, and whether the change handles all relevant conditions.
+
+IMPORTANT: Ask neutral questions, not leading ones. Do not imply the answer or suggest the patch is buggy. Ask 'What is the correct behaviour when X?' not 'Does this cause a bug when X?'. If the patch tightens a condition (adds && y), ask what happens in the newly excluded case — is it handled correctly by falling through? Be specific to this patch — reference function names, variables, and conditions.
