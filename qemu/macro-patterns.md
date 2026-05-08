@@ -58,7 +58,7 @@ There are ~40 type-specific variants (`DEFINE_PROP_DRIVE`, `DEFINE_PROP_NETDEV`,
 
 **Review notes**:
 - The named field must exist on the struct.
-- `DEFINE_PROP_END_OF_LIST()` is required — every `Property[]` must terminate with it.
+- `DEFINE_PROP_END_OF_LIST()` terminates legacy `Property[]` arrays consumed by `device_class_set_props()`. Newer code uses size-aware variants (e.g. `device_class_set_props_n()` with `ARRAY_SIZE(props)`) and intentionally drops the terminator. Don't flag a missing terminator without checking which API is being called.
 - Renaming or removing a property breaks command-line and QMP compatibility — usually wants a versioned alias kept around.
 
 ## memory_region_init_* — memory region constructors
@@ -170,7 +170,7 @@ Common families:
 
 **Review notes**:
 - `TCGv`, `TCGv_i32`, `TCGv_i64`, `TCGv_ptr` are typedefs to opaque structs — they appear "undefined" to a regex search but are real types.
-- Every `tcg_temp_new_*` needs a matching `tcg_temp_free_*` in the same translation block — leaks are caught by an assertion at end-of-block but waste work.
+- Modern QEMU automatically frees `tcg_temp_new_*` allocations at end-of-translation-block; explicit `tcg_temp_free_*` calls were removed across the tree. Older code may still call them. **Do not flag a patch for dropping `tcg_temp_free_*` calls** — that's the modern idiom. Conversely, do not require `tcg_temp_free_*` in newly-added code.
 - Mixing sizes (passing a `TCGv_i32` to an `_i64` op) is a compile error — but using `_tl` in a target-arch-specific file works because `tl` aliases the native size.
 
 ## What this means for review
